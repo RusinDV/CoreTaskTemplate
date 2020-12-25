@@ -14,7 +14,7 @@ public class UserDaoJDBCImpl implements UserDao {
     private ResultSet result;
 
     public UserDaoJDBCImpl() {
-        connection= Util.getConnectionJDBC();
+        connection = Util.getConnectionJDBC();
     }
 
     public void createUsersTable() {
@@ -40,6 +40,7 @@ public class UserDaoJDBCImpl implements UserDao {
             try {
                 statement = connection.createStatement();
                 statement.executeUpdate(queryDtropTable);
+                System.out.println("Table successfully deleted...");
             } catch (SQLException e) {
                 e.printStackTrace();
             } finally {
@@ -51,11 +52,19 @@ public class UserDaoJDBCImpl implements UserDao {
     public void saveUser(String name, String lastName, byte age) {
         String querySaveUser = "insert into dbusers.usersp values (default,'" + name + "','" + lastName + "','" + age + "')";
         try {
+            connection.setAutoCommit(false);
             statement = connection.createStatement();
             statement.executeUpdate(querySaveUser);
+            connection.commit();
+            System.out.println("User add in database with name " + name);
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
             closeConnection();
         }
 
@@ -63,18 +72,25 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void removeUserById(long id) {
         String queryDeleteById = "DELETE FROM usersp WHERE id = '" + id + "'";
-        System.out.println("Try delete user with id "+id);
+
         try {
+            connection.setAutoCommit(false);
             statement = connection.createStatement();
             int i = statement.executeUpdate(queryDeleteById);
             if (i > 0) {
-                System.out.println("User successfully deleted...");
+                System.out.println("User successfully deleted with id " + id);
             } else {
                 System.out.println("User not found...");
             }
+            connection.commit();
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
             closeConnection();
         }
     }
@@ -99,7 +115,10 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void cleanUsersTable() {
-        createUsersTable();
+        List<User> allUsers = getAllUsers();
+        for (User allUser : allUsers) {
+            removeUserById(allUser.getId());
+        }
     }
 
     private void closeConnection() {
