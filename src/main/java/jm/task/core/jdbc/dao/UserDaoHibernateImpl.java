@@ -2,9 +2,13 @@ package jm.task.core.jdbc.dao;
 
 import jm.task.core.jdbc.model.User;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
+    EntityManager entityManager;
+
     public UserDaoHibernateImpl() {
 
     }
