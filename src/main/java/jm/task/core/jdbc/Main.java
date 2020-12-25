@@ -15,6 +15,7 @@ public class Main {
         userDaoJDBC.removeUserById(3);
         List<User> allUsers = userDaoJDBC.getAllUsers();
 
+        
         for (User allUser : allUsers) {
             System.out.println(allUser);
         }
