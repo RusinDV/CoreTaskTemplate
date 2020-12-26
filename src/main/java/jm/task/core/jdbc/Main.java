@@ -11,6 +11,7 @@ import java.util.List;
 
 public class Main {
     public static UserDao getUserDaoImpl() {
+
         return new UserDaoHibernateImpl();
     }
 
