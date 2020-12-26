@@ -6,6 +6,8 @@ import jm.task.core.jdbc.dao.UserDaoHibernateImpl;
 import jm.task.core.jdbc.dao.UserDaoJDBCImpl;
 import jm.task.core.jdbc.model.User;
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.boot.registry.internal.StandardServiceRegistryImpl;
 import org.hibernate.cfg.Configuration;
@@ -14,6 +16,7 @@ import org.hibernate.service.ServiceRegistry;
 
 import javax.persistence.Persistence;
 import java.sql.*;
+import java.util.List;
 import java.util.Properties;
 
 public class Util {
@@ -22,9 +25,7 @@ public class Util {
     private static String pathDriverConnection = "com.mysql.cj.jdbc.Driver";
     private static String dbURLMySQL = "jdbc:mysql://127.0.0.1:3306/dbusers?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&serverTimezone=GMT";
 
-    public static UserDao getUserDaoImpl() {
-        return new UserDaoJDBCImpl();
-    }
+
 
     public static Connection getConnectionJDBC() {
         Connection connection = null;
@@ -39,20 +40,14 @@ public class Util {
 
     public static SessionFactory getSessionFactoryHibernate() {
         Configuration configuration = new Configuration();
-        configuration.setProperty("javax.persistence.jdbc.driver", pathDriverConnection);
-        configuration.setProperty("javax.persistence.jdbc.url", dbURLMySQL);
-        configuration.setProperty("javax.persistence.jdbc.user", userName);
-        configuration.setProperty("javax.persistence.jdbc.password", password);
+        configuration.setProperty("hibernate.connection.driver_class", pathDriverConnection);
+        configuration.setProperty("hibernate.connection.url", dbURLMySQL);
+        configuration.setProperty("hibernate.connection.username", userName);
+        configuration.setProperty("hibernate.connection.password", password);
         configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
-        configuration.setProperty("hibernate.show_sql", "true");
-        configuration.setProperty("hibernate.hbm2ddl.auto", "create-drop");
-        configuration.addAnnotatedClass(jm.task.core.jdbc.model.User.class).configure();
+        // configuration.setProperty("hibernate.show_sql", "true");
+        configuration.addAnnotatedClass(User.class).configure();
         return configuration.buildSessionFactory();
-
     }
 
-    public static void main(String[] args) {
-        UserDao userDao = new UserDaoHibernateImpl();
-        userDao.saveUser("pety", "pupkin", (byte) 15);
-    }
 }

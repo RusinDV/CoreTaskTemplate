@@ -19,7 +19,7 @@ public class UserDaoJDBCImpl implements UserDao {
         if (checkTable()) {
             dropUsersTable();
         }
-        String queryCreateTable = "CREATE TABLE IF NOT EXISTS `dbusers`.`usersp` (`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,`name` VARCHAR(45) NOT NULL, " +
+        String queryCreateTable = "CREATE TABLE `dbusers`.`usersp` (`id`  BIGINT(20) NOT NULL AUTO_INCREMENT,`name` VARCHAR(45) NOT NULL, " +
                 "`lastname` VARCHAR(45) NOT NULL, `age` INT NOT NULL,PRIMARY KEY (`id`))";
 
         try (Statement statement = connection.createStatement()) {
@@ -43,6 +43,9 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void saveUser(String name, String lastName, byte age) {
+        if(!checkTable()){
+            createUsersTable();
+        }
         String querySaveUser = "insert into dbusers.usersp values (default,?,?,?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(querySaveUser)) {
             connection.setAutoCommit(false);
